@@ -1,0 +1,3 @@
+---
+- import_playbook: pihole.yml
+- import_playbook: wireguard.yml

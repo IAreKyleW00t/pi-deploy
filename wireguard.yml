@@ -1,0 +1,6 @@
+---
+- hosts: wireguard
+  become: yes
+  roles:
+    - common
+    - wireguard
