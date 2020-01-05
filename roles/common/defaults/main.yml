@@ -1,0 +1,19 @@
+---
+set_static_ip: no
+static_interface: eth0
+static_ip_address: 192.168.1.69/24
+static_ip6_address: fe80::31f0:4d5b::69/64
+static_routers:
+  - 192.168.1.1
+static_domain_name_servers:
+  - 1.1.1.1
+  - 1.0.0.1
+  - 2606:4700:4700::1111
+  - 2606:4700:4700::1001
+
+pi_password: ''
+raspi_memory_split: 16
+raspi_wifi_country: us
+raspi_keyboard_layout: us
+raspi_timezone: America/New_York
+raspi_locale: en_US.UTF-8

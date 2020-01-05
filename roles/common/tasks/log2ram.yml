@@ -1,0 +1,25 @@
+---
+- name: Add azlux.fr packages
+  template:
+    src: azlux.list.j2
+    dest: /etc/apt/sources.list.d/azlux.list
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - log2ram
+
+- name: Install azlux.fr PGP keys
+  apt_key:
+    url: https://azlux.fr/repo.gpg.key 
+    state: present
+  tags:
+    - log2ram
+
+- name: Update apt cache and install log2ram
+  apt:
+    name: log2ram
+    update_cache: yes
+    state: latest
+  tags:
+    - log2ram

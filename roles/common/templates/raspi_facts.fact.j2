@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# {{ ansible_managed }}
+# Created on: {{ ansible_date_time.date }} {{ ansible_date_time.time }} 
+
+{
+cat <<EOF
+{
+    "pi_type" : $(raspi-config nonint get_pi_type),
+    "can_expand" : $(raspi-config nonint get_can_expand),
+    "hostname": "$(raspi-config nonint get_hostname)",
+    "overscan" : $(raspi-config nonint get_overscan),
+    "blanking" : $(raspi-config nonint get_blanking),
+    "pixdub" : $(raspi-config nonint get_pixdub),
+    "wifi_country" : "$(cat /etc/wpa_supplicant/wpa_supplicant.conf | grep -e '^country=' | cut -d '=' -f2  | tr -d '"')",
+    "locale" : "$LANG",
+    "keyboard_layout" : "$(cat /etc/default/keyboard | grep -e '^XKBLAYOUT=' | cut -d '=' -f2  | tr -d '"')",
+    "timezone": "$(cat /etc/timezone)",
+    "memory_split" : $(raspi-config nonint get_config_var gpu_mem /boot/config.txt),
+    "ssh" : $(raspi-config nonint get_ssh),
+    "vnc" : $(raspi-config nonint get_vnc),
+    "spi" : $(raspi-config nonint get_spi),
+    "i2c" : $(raspi-config nonint get_i2c),
+    "serial" : $(raspi-config nonint get_serial),
+    "serial_hw" : $(raspi-config nonint get_serial_hw),
+    "autologin" : $(raspi-config nonint get_autologin),
+    "boot_cli" : $(raspi-config nonint get_boot_cli),
+    "pi4video" : $(raspi-config nonint get_pi4video),
+    "boot_wait" : $(raspi-config nonint get_boot_wait),
+    "boot_splash" : $(raspi-config nonint get_boot_splash),
+    "rgpio" : $(raspi-config nonint get_rgpio),
+    "camera" : $(raspi-config nonint get_camera),
+    "onewire" : $(raspi-config nonint get_onewire),
+    "net_names" : $(raspi-config nonint get_net_names)
+}
+EOF
+} 2>/dev/null # Hide useless warnings

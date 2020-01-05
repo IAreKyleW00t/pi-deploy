@@ -1,0 +1,27 @@
+---
+- name: Ensure custom facts directory exists
+  file:
+    path: /etc/ansible/facts.d
+    recurse: yes
+    state: directory
+  tags:
+    - raspi
+    - facts
+
+- name: Install custom Raspberry Pi fact module
+  template:
+    src: raspi_facts.fact.j2
+    dest: /etc/ansible/facts.d/raspi_facts.fact
+    owner: root
+    group: root
+    mode: '0755'
+  tags:
+    - raspi
+    - facts
+
+- name: Reload local ansible facts
+  setup:
+    filter: ansible_local
+  tags:
+    - raspi
+    - facts

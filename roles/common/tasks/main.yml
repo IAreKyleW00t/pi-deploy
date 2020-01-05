@@ -1,0 +1,50 @@
+---
+- import_tasks: raspi_config.yml
+- import_tasks: dhcpcd.yml
+
+- name: Perform full system update
+  apt:
+    upgrade: full
+    update_cache: yes
+  tags:
+    - common
+    - update
+
+- name: Enable automatic updates
+  apt:
+    name: unattended-upgrades
+    state: latest
+  tags:
+    - common
+
+- name: Install additional software
+  apt:
+    name: [vim, git]
+    state: latest
+  tags:
+    - common
+
+- name: Update 'pi' user password
+  user:
+    name: 'pi'
+    password: '{{ pi_password }}'
+  when: pi_password | length > 0
+  tags:
+    - common
+    - passwd
+
+- import_tasks: log2ram.yml
+
+- name: Reboot system
+  reboot:
+  tags:
+    - common
+
+- name: Remove packages that are no longer needed
+  apt:
+    autoremove: yes
+    autoclean: yes
+  tags:
+    - common
+    - cleanup
+
