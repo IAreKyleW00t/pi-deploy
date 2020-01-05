@@ -1,0 +1,8 @@
+# Ansible retries
+*.retry
+
+# VSCode
+.vscode/
+
+# Inventories
+hosts.yml
