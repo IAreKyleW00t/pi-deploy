@@ -29,7 +29,7 @@
 
 - name: Set WiFi country
   command: raspi-config nonint do_wifi_country {{ raspi_wifi_country | quote }}
-  when: ansible_local.raspi_facts.wifi_country != raspi_wifi_country
+  when: ansible_local.raspi_facts.wifi_country != raspi_wifi_country and ansible_local.raspi_facts.pi_type == 0
   tags:
     - raspi
 

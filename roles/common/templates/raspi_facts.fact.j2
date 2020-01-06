@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # {{ ansible_managed }}
-# Created on: {{ ansible_date_time.date }} {{ ansible_date_time.time }} 
+# Created on: {{ ansible_date_time.date }} {{ ansible_date_time.time }}
 
 {
 cat <<EOF
 {
     "pi_type" : $(raspi-config nonint get_pi_type),
     "can_expand" : $(raspi-config nonint get_can_expand),
-    "hostname": "$(raspi-config nonint get_hostname)",
+    "hostname" : "$(raspi-config nonint get_hostname)",
     "overscan" : $(raspi-config nonint get_overscan),
-    "blanking" : $(raspi-config nonint get_blanking),
+    "blanking" : $(raspi-config nonint get_config_var consoleblank /boot/config.txt),
     "pixdub" : $(raspi-config nonint get_pixdub),
     "wifi_country" : "$(cat /etc/wpa_supplicant/wpa_supplicant.conf | grep -e '^country=' | cut -d '=' -f2  | tr -d '"')",
     "locale" : "$LANG",

@@ -1,22 +1,23 @@
 ---
 - name: Add azlux.fr packages
-  template:
-    src: azlux.list.j2
-    dest: /etc/apt/sources.list.d/azlux.list
+  lineinfile:
+    path: /etc/apt/sources.list.d/azlux.list
+    line: 'deb http://packages.azlux.fr/debian/ {{ ansible_distribution_release }} main'
     owner: root
     group: root
     mode: '0644'
+    create: yes
   tags:
     - log2ram
 
 - name: Install azlux.fr PGP keys
   apt_key:
-    url: https://azlux.fr/repo.gpg.key 
+    url: https://azlux.fr/repo.gpg.key
     state: present
   tags:
     - log2ram
 
-- name: Update apt cache and install log2ram
+- name: Install log2ram
   apt:
     name: log2ram
     update_cache: yes

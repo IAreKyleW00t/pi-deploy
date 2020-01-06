@@ -1,6 +1,20 @@
 ---
 - import_tasks: raspi_config.yml
+  tags:
+    - common
+
+- name: Update 'pi' user password
+  user:
+    name: 'pi'
+    password: '{{ user_password }}'
+  when: user_password | length > 0
+  tags:
+    - common
+    - passwd
+
 - import_tasks: dhcpcd.yml
+  tags:
+    - common
 
 - name: Perform full system update
   apt:
@@ -24,18 +38,11 @@
   tags:
     - common
 
-- name: Update 'pi' user password
-  user:
-    name: 'pi'
-    password: '{{ pi_password }}'
-  when: pi_password | length > 0
+- import_tasks: log2ram.yml
   tags:
     - common
-    - passwd
 
-- import_tasks: log2ram.yml
-
-- name: Reboot system
+- name: Reboot system to apply all updates
   reboot:
   tags:
     - common
@@ -47,4 +54,3 @@
   tags:
     - common
     - cleanup
-

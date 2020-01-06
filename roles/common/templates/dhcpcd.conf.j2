@@ -40,7 +40,7 @@ require dhcp_server_identifier
 # OR generate Stable Private IPv6 Addresses based from the DUID
 slaac private
 
-{% if set_static_ip is sameas true %}
+{% if use_static_ip is sameas true %}
 # Static IP settings
 interface {{ static_interface }}
     static ip_address={{ static_ip_address }}
@@ -48,5 +48,5 @@ interface {{ static_interface }}
     static ip6_address={{ static_ip6_address }}
 {% endif %}
     static routers={{ static_routers|join(" ") }}
-    static domain_name_servers={{ static_domain_name_servers|join(" ") }}
+    static domain_name_servers={{ static_dns|join(" ") }}
 {% endif %}

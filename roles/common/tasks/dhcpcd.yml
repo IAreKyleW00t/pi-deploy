@@ -7,7 +7,6 @@
     group: netdev
     mode: '0644'
   tags:
-    - common
     - network
 
 - name: Restart dhcpcd service
@@ -16,5 +15,4 @@
     state: restarted
     daemon_reload: yes
   tags:
-    - common
     - network
