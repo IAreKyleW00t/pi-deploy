@@ -3,8 +3,7 @@
   file:
     path: /etc/pihole
     state: directory
-  tags:
-    - pihole
+  tags: pihole
 
 - name: Install Pi-Hole configuration file
   template:
@@ -13,28 +12,23 @@
     owner: root
     group: root
     mode: '0644'
-  tags:
-    - pihole
+  tags: pihole
 
 - name: Download Pi-Hole installer
   get_url:
     url: https://install.pi-hole.net
     dest: /tmp/pihole-installer.sh
-  tags:
-    - pihole
+  tags: pihole
 
 - name: Run Pi-Hole installer
   command: bash /tmp/pihole-installer.sh --unattended
-  tags:
-    - pihole
+  tags: pihole
 
 - name: Cleanup Pi-Hole installer
   file:
     path: /tmp/pihole-installer.sh
     state: absent
-  tags:
-    - pihole
-    - cleanup
+  tags: [pihole, cleanup]
 
 - name: Make system use Pi-Hole for DNS
   lineinfile:
@@ -42,32 +36,25 @@
     regexp: '^(\s*)static domain_name_servers='
     line: '\1static domain_name_servers=127.0.0.1 ::1'
     backrefs: yes
-  tags:
-    - pihole
-    - network
+  tags: [pihole, network]
 
 - name: Restart dhcpcd service
   systemd:
     name: dhcpcd
     state: restarted
     daemon_reload: yes
-  tags:
-    - pihole
-    - network
+  tags: [pihole, network]
 
 - import_tasks: pihole_sync.yml
-  when: enable_pihole_sync | bool
-  tags:
-    - pihole
+  when: pihole_enable_sync | bool
+  tags: pihole
 
 - import_tasks: unbound.yml
-  when: use_unbound | bool
+  when: pihole_enable_unbound | bool
   tags:
   - pihole
 
 - name: Flush Pi-Hole logs
   command: pihole -f
   when: pihole_flush_logs | bool
-  tags:
-    - pihole
-    - cleanup
+  tags: [pihole, cleanup]

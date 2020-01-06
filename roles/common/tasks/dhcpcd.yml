@@ -1,18 +1,16 @@
 ---
-- name: Configure dhcpcd
+- name: Install dhcpcd configuration
   template:
     src: dhcpcd.conf.j2
     dest: /etc/dhcpcd.conf
     owner: root
     group: netdev
     mode: '0644'
-  tags:
-    - network
+  tags: network
 
 - name: Restart dhcpcd service
   systemd:
     name: dhcpcd
     state: restarted
     daemon_reload: yes
-  tags:
-    - network
+  tags: network

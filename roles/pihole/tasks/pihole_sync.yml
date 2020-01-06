@@ -1,23 +1,20 @@
 ---
 - import_tasks: git_ssh.yml
-  tags:
-    - sync
+  tags: sync
 
 - name: Download personal list repo
   git:
     repo: '{{ pihole_sync_repo }}'
-    dest: '{{ pihole_sync_repo_dir }}'
+    dest: /opt/pihole-lists
     update: yes
-  tags:
-    - sync
+  tags: sync
 
 - name: Download pihole-cloudsync
   git:
     repo: git@github.com:stevejenkins/pihole-cloudsync.git
     dest: /opt/pihole-cloudsync
     update: yes
-  tags:
-    - sync
+  tags: sync
 
 - name: Copy pihole-cloudsync locally
   copy:
@@ -27,8 +24,7 @@
     group: root
     mode: '0755'
     remote_src: yes
-  tags:
-    - sync
+  tags: sync
 
 - name: Update local pihole-cloudsync script variables
   lineinfile:
@@ -36,12 +32,11 @@
     regexp: '^#?{{ item.var }}='
     line: '{{ item.var }}={{ item.val }}'
   with_items:
-    - {var: personal_git_dir, val: '{{ pihole_sync_repo_dir }}'}
+    - {var: personal_git_dir, val: /opt/pihole-lists}
     - {var: enable_hosts, val: '{{ pihole_sync_enable_hosts }}'}
-  tags:
-    - sync
+  tags: sync
 
-- name: Update hosts file to work with pihole-cloudsync
+- name: Update hosts file to support pihole-cloudsync
   lineinfile:
     path: /etc/hosts
     line: '{{ item }}'
@@ -49,28 +44,24 @@
     - '# SHARED HOSTS - START'
     - '# SHARED HOSTS - END'
   when: pihole_sync_enable_hosts | bool
-  tags:
-    - sync
+  tags: sync
 
 - name: Perform inital sync
   command: /usr/local/bin/pihole-cloudsync --initpull
-  tags:
-    - sync
+  tags: sync
 
 - name: Setup crontab for periodically pulling new changes
   cron:
-    name: pihole-cloudsync
+    name: pihole-cloudsync pull
     minute: '*/{{ pihole_sync_rate }}'
     job: /usr/local/bin/pihole-cloudsync --pull 2>&1 > /dev/null
   when: pihole_sync_leader | bool == False
-  tags:
-    - sync
+  tags: sync
 
 - name: Setup crontab for periodically pushing new changes
   cron:
-    name: pihole-cloudsync
+    name: pihole-cloudsync push
     minute: '*/{{ pihole_sync_rate }}'
     job: /usr/local/bin/pihole-cloudsync --push 2>&1 > /dev/null
   when: pihole_sync_leader | bool
-  tags:
-    - sync
+  tags: sync

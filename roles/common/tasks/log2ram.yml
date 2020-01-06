@@ -7,20 +7,16 @@
     group: root
     mode: '0644'
     create: yes
-  tags:
-    - log2ram
+  tags: log2ram
 
 - name: Install azlux.fr PGP keys
   apt_key:
     url: https://azlux.fr/repo.gpg.key
     state: present
-  tags:
-    - log2ram
+  tags: log2ram
 
 - name: Install log2ram
   apt:
     name: log2ram
-    update_cache: yes
     state: latest
-  tags:
-    - log2ram
+  tags: log2ram

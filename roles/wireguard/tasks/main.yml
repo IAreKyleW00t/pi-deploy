@@ -3,8 +3,7 @@
   apt:
     name: raspberrypi-kernel-headers
     state: latest
-  tags:
-    - wireguard
+  tags: wireguard
 
 - name: Enable unstable packages
   lineinfile:
@@ -14,8 +13,7 @@
     group: root
     mode: '0644'
     create: yes
-  tags:
-    - wireguard
+  tags: wireguard
 
 - name: Limit unstable packages
   blockinfile:
@@ -28,8 +26,7 @@
       Package: *
       Pin: release a=unstable
       Pin-Priority: 150
-  tags:
-    - wireguard
+  tags: wireguard
 
 - name: Install Wireguard PGP keys
   apt_key:
@@ -40,35 +37,31 @@
     - 8B48AD6246925553
     - 7638D0442B90D010
     - 04EE7237B7D453EC
-  tags:
-    - wireguard
+  tags: wireguard
 
 - name: Install Wireguard
   apt:
     name: wireguard
     state: latest
     update_cache: yes
-  tags:
-    - wireguard
+  tags: wireguard
 
 - name: Ensure Wireguard directory exists
   file:
     path: /etc/wireguard
     state: directory
-  tags:
-    - wireguard
+  tags: wireguard
 
-- name: Install Wireguard configuration file
+- name: Install Wireguard configuration
   template:
     src: wg0.conf.j2
     dest: /etc/wireguard/wg0.conf
     owner: root
     group: root
     mode: '0600'
-  tags:
-    - wireguard
+  tags: wireguard
 
-- name: Enable IP forwarding
+- name: Enable IPv4 and IPv6 forwarding
   blockinfile:
     path: /etc/sysctl.d/10-wireguard.conf
     owner: root
@@ -78,39 +71,30 @@
     block: |
       net.ipv4.ip_forward=1
       net.ipv6.conf.all.forwarding=1
-  tags:
-    - wireguard
-    - network
+  tags: [wireguard, network]
 
 - name: Reboot system to enable Wireguard kernel modules
   reboot:
-  tags:
-    - wireguard
+  tags: wireguard
 
 - name: Enable Wireguard service
   systemd:
     name: 'wg-quick@{{ wireguard_interface }}'
     enabled: yes
-  tags:
-    - wireguard
+  tags: wireguard
 
-- name: Restart Wireguard service
+- name: Start/Restart Wireguard service
   systemd:
     name: 'wg-quick@{{ wireguard_interface }}'
     state: restarted
-  tags:
-    - wireguard
+  tags: wireguard
 
 - name: Grab Wireguard server public key
   shell: 'echo -n {{ wireguard_privkey | quote }} | wg pubkey'
   register: wg
-  tags:
-    - wireguard
-    - keys
+  tags: [wireguard, pubkey]
 
 - name: Display Wireguard server public key
   debug:
     msg: 'Wireguard pubkey: {{ wg.stdout }}'
-  tags:
-    - wireguard
-    - keys
+  tags: [wireguard, pubkey]

@@ -1,52 +1,46 @@
 ---
 - import_tasks: raspi_facts.yml
+  tags: raspi
 
 - name: Expand file system
   command: raspi-config nonint do_expand_rootfs
   when: ansible_local.raspi_facts.can_expand != 0
-  tags:
-    - raspi
+  tags: raspi
 
-- name: Set system hostnames
+  # raspi-config doesn't fully change the systems hostname so we use hostnamectl too
+- name: Set system hostname
   shell: |
     raspi-config nonint do_hostname {{ inventory_hostname | quote }}
     hostnamectl set-hostname {{ inventory_hostname | quote }}
   when: ansible_local.raspi_facts.hostname != inventory_hostname
-  tags:
-    - raspi
+  tags: raspi
 
 - name: Enable persistent SSH access
   command: raspi-config nonint do_ssh 0
   when: ansible_local.raspi_facts.ssh != 0
-  tags:
-    - raspi
+  tags: raspi
 
 - name: Set memory split value
   command: raspi-config nonint do_memory_split {{ raspi_memory_split | quote }}
   when: ansible_local.raspi_facts.memory_split != raspi_memory_split
-  tags:
-    - raspi
+  tags: raspi
 
 - name: Set WiFi country
   command: raspi-config nonint do_wifi_country {{ raspi_wifi_country | quote }}
-  when: ansible_local.raspi_facts.wifi_country != raspi_wifi_country and ansible_local.raspi_facts.pi_type == 0
-  tags:
-    - raspi
+  when: (ansible_local.raspi_facts.pi_type == 0) and (ansible_local.raspi_facts.wifi_country != raspi_wifi_country)
+  tags: raspi
 
 - name: Set keyboard layout
   command: raspi-config nonint do_configure_keyboard {{ raspi_keyboard_layout | quote }}
   when: ansible_local.raspi_facts.keyboard_layout != raspi_keyboard_layout
-  tags:
-    - raspi
+  tags: raspi
 
 - name: Set timezone
   command: raspi-config nonint do_change_timezone {{ raspi_timezone | quote }}
   when: ansible_local.raspi_facts.timezone != raspi_timezone
-  tags:
-    - raspi
+  tags: raspi
 
 - name: Set locale
   command: raspi-config nonint do_change_locale {{ raspi_locale | quote }}
   when: ansible_local.raspi_facts.locale != raspi_locale
-  tags:
-    - raspi
+  tags: raspi

@@ -1,5 +1,5 @@
 # {{ ansible_managed }}
-# Created on: {{ ansible_date_time.date }} {{ ansible_date_time.time }} 
+# Created on: {{ ansible_date_time.date }} {{ ansible_date_time.time }}
 
 # Allow users of this group to interact with dhcpcd via the control socket.
 #controlgroup wheel
@@ -40,13 +40,13 @@ require dhcp_server_identifier
 # OR generate Stable Private IPv6 Addresses based from the DUID
 slaac private
 
-{% if use_static_ip is sameas true %}
+{% if raspi_enable_static_ip is sameas true %}
 # Static IP settings
-interface {{ static_interface }}
-    static ip_address={{ static_ip_address }}
-{% if static_ip6_address|length %}
-    static ip6_address={{ static_ip6_address }}
+interface {{ raspi_static_interface }}
+    static ip_address={{ raspi_static_ip }}
+{% if raspi_static_ip6 | length %}
+    static ip6_address={{ raspi_static_ip6 }}
 {% endif %}
-    static routers={{ static_routers|join(" ") }}
-    static domain_name_servers={{ static_dns|join(" ") }}
+    static routers={{ raspi_static_routers | join(" ") }}
+    static domain_name_servers={{ raspi_static_dns | join(" ") }}
 {% endif %}

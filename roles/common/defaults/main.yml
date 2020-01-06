@@ -1,16 +1,16 @@
 ---
 # pi user password
 # https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module
-user_password: ''
+raspi_user_password: ''
 
 # Static IP settings
-use_static_ip: no
-static_interface: eth0
-static_ip_address: 192.168.1.69/24
-static_ip6_address: fe80::31f0:4d5b::69/64
-static_routers:
+raspi_enable_static_ip: no
+raspi_static_interface: eth0
+raspi_static_ip: 192.168.1.69/24
+raspi_static_ip6: fe80::31f0:4d5b::69/64
+raspi_static_routers:
   - 192.168.1.1
-static_dns:
+raspi_static_dns:
   - 1.1.1.1
   - 1.0.0.1
   - 2606:4700:4700::1111

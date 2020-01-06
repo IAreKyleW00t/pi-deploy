@@ -1,11 +1,12 @@
 # {{ ansible_managed }}
 # Created on: {{ ansible_date_time.date }} {{ ansible_date_time.time }}
+
 server:
     # If no logfile is specified, syslog is used
     # logfile: "/var/log/unbound/unbound.log"
     verbosity: 0
 
-    port: 5353
+    port: {{ unbound_port }}
     do-ip4: yes
     do-udp: yes
     do-tcp: yes
@@ -14,7 +15,7 @@ server:
     do-ip6: yes
 
     # Use this only when you downloaded the list of primary root servers!
-    root-hints: "{{ unbound_root_nameservers }}"
+    root-hints: "{{ unbound_root_hints }}"
 
     # Trust glue only if it is within the servers authority
     harden-glue: yes

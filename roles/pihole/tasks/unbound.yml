@@ -3,28 +3,25 @@
   apt:
     name: unbound
     state: latest
-  tags:
-    - unbound
+  tags: unbound
 
-- name: Install unbound configuration file
+- name: Install unbound configuration
   template:
     src: unbound.conf.j2
     dest: /etc/unbound/unbound.conf.d/pi-hole.conf
     owner: root
     group: root
     mode: '0644'
-  tags:
-    - pihole
+  tags: unbound
 
 - name: Download latest root nameservers
   get_url:
     url: https://www.internic.net/domain/named.root
-    dest: '{{ unbound_root_nameservers }}'
+    dest: '{{ unbound_root_hints }}'
     owner: root
     group: root
     mode: '0644'
-  tags:
-    - unbound
+  tags: unbound
 
 - name: Enable periodic root nameserver updates
   cron:
@@ -33,33 +30,29 @@
     hour: '0'
     day: '1'
     month: '*/6'
-    job: 'curl https://www.internic.net/domain/named.root -o {{ unbound_root_nameservers | quote }}.new && mv {{ unbound_root_nameservers | quote }}.new {{ unbound_root_nameservers | quote }}'
-  tags:
-    - unbound
+    job: 'curl https://www.internic.net/domain/named.root -o {{ unbound_root_hints | quote }}.new && mv {{ unbound_root_hints | quote }}.new {{ unbound_root_hints | quote }}'
+  tags: unbound
 
 - name: Enable unbound service
   systemd:
     name: unbound
     enabled: yes
-  tags:
-    - unbound
+  tags: unbound
 
-- name: Restart unbound service
+- name: Start/Restart unbound service
   systemd:
     name: unbound
     state: restarted
-  tags:
-    - unbound
+  tags: unbound
 
-- name: Remove old Pi-Hole DNS settings
+- name: Remove existing Pi-Hole DNS settings
   lineinfile:
     path: /etc/pihole/setupVars.conf
     regexp: '^PIHOLE_DNS_'
     state: absent
-  tags:
-    - unbound
+  tags: unbound
 
-- name: Set Pi-Hole to use use unbound for DNS
+- name: Set Pi-Hole DNS to use local unbound instance
   lineinfile:
     path: /etc/pihole/setupVars.conf
     state: present
@@ -67,10 +60,8 @@
   with_items:
     - 'PIHOLE_DNS_1=127.0.0.1#{{ unbound_port }}'
     - 'PIHOLE_DNS_2=::1#{{ unbound_port }}'
-  tags:
-    - unbound
+  tags: unbound
 
-- name: Reconfigure Pi-Hole to use new settings
+- name: Reconfigure Pi-Hole to apply new settings
   command: /etc/.pihole/automated\ install/basic-install.sh --reconfigure --unattended
-  tags:
-    - unbound
+  tags: unbound

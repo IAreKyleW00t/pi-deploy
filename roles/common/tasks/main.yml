@@ -1,56 +1,44 @@
 ---
 - import_tasks: raspi_config.yml
-  tags:
-    - common
+  tags: common
 
-- name: Update 'pi' user password
+- name: Update default 'pi' user password
   user:
-    name: 'pi'
-    password: '{{ user_password }}'
-  when: user_password | length > 0
-  tags:
-    - common
-    - passwd
+    name: pi
+    password: '{{ raspi_user_password }}'
+  when: raspi_user_password | length > 0
+  tags: [common, passwd]
 
 - import_tasks: dhcpcd.yml
-  tags:
-    - common
+  tags: common
 
 - name: Perform full system update
   apt:
     upgrade: full
     update_cache: yes
-  tags:
-    - common
-    - update
+  tags: common update
 
 - name: Enable automatic updates
   apt:
     name: unattended-upgrades
     state: latest
-  tags:
-    - common
+  tags: common
 
 - name: Install additional software
   apt:
     name: [vim, git]
     state: latest
-  tags:
-    - common
+  tags: common
 
 - import_tasks: log2ram.yml
-  tags:
-    - common
+  tags: common
 
-- name: Reboot system to apply all updates
+- name: Reboot system to apply all changes/updates
   reboot:
-  tags:
-    - common
+  tags: common
 
 - name: Remove packages that are no longer needed
   apt:
     autoremove: yes
     autoclean: yes
-  tags:
-    - common
-    - cleanup
+  tags: [common, cleanup]

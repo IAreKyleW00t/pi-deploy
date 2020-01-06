@@ -4,9 +4,7 @@
     path: /etc/ansible/facts.d
     recurse: yes
     state: directory
-  tags:
-    - raspi
-    - facts
+  tags: [raspi, facts]
 
 - name: Install custom Raspberry Pi fact module
   template:
@@ -15,13 +13,9 @@
     owner: root
     group: root
     mode: '0755'
-  tags:
-    - raspi
-    - facts
+  tags: [raspi, facts]
 
 - name: Reload local ansible facts
   setup:
     filter: ansible_local
-  tags:
-    - raspi
-    - facts
+  tags: [raspi, facts]
