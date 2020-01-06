@@ -1,0 +1,76 @@
+---
+- name: Install unbound
+  apt:
+    name: unbound
+    state: latest
+  tags:
+    - unbound
+
+- name: Install unbound configuration file
+  template:
+    src: unbound.conf.j2
+    dest: /etc/unbound/unbound.conf.d/pi-hole.conf
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - pihole
+
+- name: Download latest root nameservers
+  get_url:
+    url: https://www.internic.net/domain/named.root
+    dest: '{{ unbound_root_nameservers }}'
+    owner: root
+    group: root
+    mode: '0644'
+  tags:
+    - unbound
+
+- name: Enable periodic root nameserver updates
+  cron:
+    name: Bi-yearly update root nameservers
+    minute: '0'
+    hour: '0'
+    day: '1'
+    month: '*/6'
+    job: 'curl https://www.internic.net/domain/named.root -o {{ unbound_root_nameservers | quote }}.new && mv {{ unbound_root_nameservers | quote }}.new {{ unbound_root_nameservers | quote }}'
+  tags:
+    - unbound
+
+- name: Enable unbound service
+  systemd:
+    name: unbound
+    enabled: yes
+  tags:
+    - unbound
+
+- name: Restart unbound service
+  systemd:
+    name: unbound
+    state: restarted
+  tags:
+    - unbound
+
+- name: Remove old Pi-Hole DNS settings
+  lineinfile:
+    path: /etc/pihole/setupVars.conf
+    regexp: '^PIHOLE_DNS_'
+    state: absent
+  tags:
+    - unbound
+
+- name: Set Pi-Hole to use use unbound for DNS
+  lineinfile:
+    path: /etc/pihole/setupVars.conf
+    state: present
+    line: '{{ item }}'
+  with_items:
+    - 'PIHOLE_DNS_1=127.0.0.1#{{ unbound_port }}'
+    - 'PIHOLE_DNS_2=::1#{{ unbound_port }}'
+  tags:
+    - unbound
+
+- name: Reconfigure Pi-Hole to use new settings
+  command: /etc/.pihole/automated\ install/basic-install.sh --reconfigure --unattended
+  tags:
+    - unbound

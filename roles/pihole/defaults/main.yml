@@ -1,0 +1,48 @@
+---
+# Pi-Hole settings
+# Passwords are double hashed using SHA256
+pihole_password: ''
+pihole_admin_email: admin@example.com
+pihole_dns:
+  - 1.1.1.1#53
+  - 1.0.0.1#53
+  - 2606:4700:4700::1111#53
+  - 2606:4700:4700::1001#53
+
+pihole_dnsmasq_mode: single
+pihole_fqdn_required: yes
+pihole_bogus_priv: yes
+pihole_dnssec: yes
+pihole_conditional_forwarding: no
+pihole_conditional_forwarding_ip: 192.168.1.1
+pihole_conditional_forwarding_domain: home.lan
+pihole_api_exclude_domains: []
+pihole_api_exclude_clients: []
+pihole_api_query_log: all
+pihole_api_privacy_mode: no
+
+# Clear old Pi-Hole logs
+pihole_flush_logs: no
+
+# Unbound settings
+# Enabling unbound will automatically force Pi-Hole to use it
+use_unbound: no
+unbound_root_nameservers: /var/lib/unbound/root.hints
+unbound_port: 5353
+
+# pihole-cloudsync
+# Private key will need to be added to GitHub for password-less syncing
+enable_pihole_sync: no
+pihole_sync_privkey: |
+  -----BEGIN RSA PRIVATE KEY-----
+  ...
+  -----END RSA PRIVATE KEY-----
+pihole_sync_repo: https://github.com/stevejenkins/my-pihole-lists
+pihole_sync_repo_dir: /opt/pihole-lists
+pihole_sync_enable_hosts: yes
+
+# Minutes between syncing
+pihole_sync_rate: 15
+
+# Leaders will push changes to GitHub
+pihole_sync_leader: no

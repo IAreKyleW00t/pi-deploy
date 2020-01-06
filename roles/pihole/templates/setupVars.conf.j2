@@ -1,0 +1,32 @@
+# {{ ansible_managed }}
+# Created on: {{ ansible_date_time.date }} {{ ansible_date_time.time }}
+BLOCKING_ENABLED=true
+PIHOLE_INTERFACE={{ static_interface }}
+IPV4_ADDRESS={{ static_ip_address }}
+IPV6_ADDRESS={{ static_ip6_address }}
+QUERY_LOGGING=true
+INSTALL_WEB_SERVER=true
+INSTALL_WEB_INTERFACE=true
+LIGHTTPD_ENABLED=true
+WEBPASSWORD={{ pihole_password }}
+DNSMASQ_LISTENING={{ pihole_dnsmasq_mode }}
+{% for dns in pihole_dns %}
+PIHOLE_DNS_{{ loop.index }}={{ dns }}
+{% endfor %}
+DNS_FQDN_REQUIRED={{ pihole_fqdn_required }}
+DNS_BOGUS_PRIV={{ pihole_bogus_priv }}
+DNSSEC={{ pihole_dnssec }}
+CONDITIONAL_FORWARDING={{ pihole_conditional_forwarding }}
+{% if pihole_conditional_forwarding is sameas true %}
+CONDITIONAL_FORWARDING_IP={{ pihole_conditional_forwarding_ip }}
+CONDITIONAL_FORWARDING_DOMAIN={{ pihole_conditional_forwarding_domain }}
+CONDITIONAL_FORWARDING_REVERSE={{ pihole_conditional_forwarding_ip.split('.')[0:3] | reverse | join('.') }}.in-addr.arpa
+{% endif %}
+TEMPERATUREUNIT=C
+ADMIN_EMAIL={{ pihole_admin_email }}
+WEBUIBOXEDLAYOUT=boxed
+API_EXCLUDE_DOMAINS={{ pihole_api_exclude_domains | join(",") }}
+API_EXCLUDE_CLIENTS={{ pihole_api_exclude_clients | join(",") }}
+API_QUERY_LOG_SHOW={{ pihole_api_query_log }}
+API_PRIVACY_MODE={{ pihole_api_privacy_mode }}
+DHCP_ACTIVE=false

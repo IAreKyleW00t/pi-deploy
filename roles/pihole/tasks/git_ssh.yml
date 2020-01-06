@@ -1,0 +1,35 @@
+---
+- name: Ensure root SSH folder exists
+  file:
+    path: /root/.ssh
+    owner: root
+    group: root
+    mode: '0700'
+    state: directory
+  tags:
+    - ssh
+
+- name: Add private SSH keys
+  copy:
+    dest: /root/.ssh/id_ed25519
+    owner: root
+    group: root
+    mode: '0600'
+    content: '{{ pihole_sync_privkey }}'
+  tags:
+    - ssh
+
+- name: Pull list of SSH fingerprints for GitHub
+  command: ssh-keyscan -H github.com
+  register: keyscan
+  tags:
+    - ssh
+
+- name: Add GitHub SSH fingerprints to known_hosts
+  lineinfile:
+    path: /root/.ssh/known_hosts
+    line: '{{ item }}'
+    create: yes
+  with_items: '{{ keyscan.stdout_lines }}'
+  tags:
+    - ssh
