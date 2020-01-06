@@ -1,0 +1,116 @@
+---
+- name: Install Raspberry Pi kernel headers
+  apt:
+    name: raspberrypi-kernel-headers
+    state: latest
+  tags:
+    - wireguard
+
+- name: Enable unstable packages
+  lineinfile:
+    path: /etc/apt/sources.list.d/unstable.list
+    line: 'deb http://deb.debian.org/debian/ unstable main'
+    owner: root
+    group: root
+    mode: '0644'
+    create: yes
+  tags:
+    - wireguard
+
+- name: Limit unstable packages
+  blockinfile:
+    path: /etc/apt/preferences.d/limit-unstable
+    owner: root
+    group: root
+    mode: '0644'
+    create: yes
+    block: |
+      Package: *
+      Pin: release a=unstable
+      Pin-Priority: 150
+  tags:
+    - wireguard
+
+- name: Install Wireguard PGP keys
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: '{{ item }}'
+    state: present
+  with_items:
+    - 8B48AD6246925553
+    - 7638D0442B90D010
+    - 04EE7237B7D453EC
+  tags:
+    - wireguard
+
+- name: Install Wireguard
+  apt:
+    name: wireguard
+    state: latest
+    update_cache: yes
+  tags:
+    - wireguard
+
+- name: Ensure Wireguard directory exists
+  file:
+    path: /etc/wireguard
+    state: directory
+  tags:
+    - wireguard
+
+- name: Install Wireguard configuration file
+  template:
+    src: wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    owner: root
+    group: root
+    mode: '0600'
+  tags:
+    - wireguard
+
+- name: Enable IP forwarding
+  blockinfile:
+    path: /etc/sysctl.d/10-wireguard.conf
+    owner: root
+    group: root
+    mode: '0644'
+    create: yes
+    block: |
+      net.ipv4.ip_forward=1
+      net.ipv6.conf.all.forwarding=1
+  tags:
+    - wireguard
+    - network
+
+- name: Reboot system to enable Wireguard kernel modules
+  reboot:
+  tags:
+    - wireguard
+
+- name: Enable Wireguard service
+  systemd:
+    name: 'wg-quick@{{ wireguard_interface }}'
+    enabled: yes
+  tags:
+    - wireguard
+
+- name: Restart Wireguard service
+  systemd:
+    name: 'wg-quick@{{ wireguard_interface }}'
+    state: restarted
+  tags:
+    - wireguard
+
+- name: Grab Wireguard server public key
+  shell: 'echo -n {{ wireguard_privkey | quote }} | wg pubkey'
+  register: wg
+  tags:
+    - wireguard
+    - keys
+
+- name: Display Wireguard server public key
+  debug:
+    msg: 'Wireguard pubkey: {{ wg.stdout }}'
+  tags:
+    - wireguard
+    - keys

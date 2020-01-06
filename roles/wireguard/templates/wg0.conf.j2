@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+# Created on: {{ ansible_date_time.date }} {{ ansible_date_time.time }}
+[Interface]
+Address = {{ wireguard_ip_address }}, {{ wireguard_ip6_address }}
+ListenPort = {{ wireguard_port }}
+
+PrivateKey = {{ wireguard_privkey }}
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; ip6tables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; ip6tables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ static_interface }} -j MASQUERADE; ip6tables -t nat -A POSTROUTING -o {{ static_interface }} -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; ip6tables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; ip6tables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ static_interface }} -j MASQUERADE; ip6tables -t nat -D POSTROUTING -o {{ static_interface }} -j MASQUERADE
+
+{% for client in wireguard_clients %}
+# {{ client.name }}
+[Peer]
+PublicKey = {{ client.pubkey }}
+AllowedIPs = {{ client.ip_address }}, {{ client.ip6_address }}
+{% endfor %}
