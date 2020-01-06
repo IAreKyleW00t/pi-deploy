@@ -43,6 +43,11 @@ unbound_port: 5353
 ## Sync settings
 pihole_enable_sync: no
 
+# Git options
+git_name: root
+git_email: root@example.com
+git_username: root
+
 # Private key will needed for passwordless syncing, private repo's, and pushing changes
 pihole_sync_ssh_key: |
   -----BEGIN RSA PRIVATE KEY-----

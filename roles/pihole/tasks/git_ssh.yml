@@ -1,4 +1,13 @@
 ---
+- name: Install root gitconfig
+  template:
+    src: gitconfig.j2
+    dest: /root/.gitconfig
+    owner: root
+    group: root
+    mode: '0644'
+  tags: git
+
 - name: Ensure root SSH folder exists
   file:
     path: /root/.ssh
