@@ -2,7 +2,7 @@
 # Created on: {{ ansible_date_time.date }} {{ ansible_date_time.time }}
 
 [Interface]
-Address = {{ wireguard_address }}
+Address = {{ wireguard_addresses | join(", ") }}
 ListenPort = {{ wireguard_port }}
 
 PrivateKey = {{ wireguard_privkey }}
@@ -13,5 +13,5 @@ PostDown = iptables -D FORWARD -i %i -j ACCEPT; ip6tables -D FORWARD -i %i -j AC
 # {{ client.name }}
 [Peer]
 PublicKey = {{ client.pubkey }}
-AllowedIPs = {{ client.allowed_ips }}
+AllowedIPs = {{ client.allowed_ips | join(", ") }}
 {% endfor %}

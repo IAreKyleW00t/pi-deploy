@@ -2,11 +2,15 @@
 # Wireguard settings
 # https://www.ultratools.com/tools/rangeGenerator for IPv6 generating subnets
 wireguard_interface: wg0
-wireguard_address: 192.168.42.1/24, fdf5:e6b9:a511:1ab0::/64
 wireguard_port: 51820
 wireguard_privkey: QAgp...A1c=
+wireguard_addresses:
+  - 192.168.42.1/24
+  - fdf5:e6b9:a511:1ab0::/64
 
 wireguard_clients:
   - name: Example
     pubkey: 9hzX...wTY=
-    allowed_ips: 192.168.42.2/32, fdf5:e6b9:a511:1ab0::2/128
+    allowed_ips:
+      - 192.168.42.2/32
+      - fdf5:e6b9:a511:1ab0::2/128
