@@ -2,10 +2,10 @@
 # Created on: {{ ansible_date_time.date }} {{ ansible_date_time.time }}
 
 BLOCKING_ENABLED=true
-PIHOLE_INTERFACE={{ raspi_static_interface }}
-IPV4_ADDRESS={{ raspi_static_ip }}
-IPV6_ADDRESS={{ raspi_static_ip6 }}
-QUERY_LOGGING=true
+PIHOLE_INTERFACE={{ pihole_interface }}
+IPV4_ADDRESS={{ pihole_ip_address }}
+IPV6_ADDRESS={{ pihole_ip6_address }}
+QUERY_LOGGING={{ pihole_query_log }}
 INSTALL_WEB_SERVER=true
 INSTALL_WEB_INTERFACE=true
 LIGHTTPD_ENABLED=true

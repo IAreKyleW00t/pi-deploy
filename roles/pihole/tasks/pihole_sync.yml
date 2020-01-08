@@ -31,6 +31,7 @@
     path: /usr/local/bin/pihole-cloudsync
     regexp: '^#?{{ item.var }}='
     line: '{{ item.var }}={{ item.val }}'
+    state: present
   with_items:
     - {var: personal_git_dir, val: /opt/pihole-lists}
     - {var: enable_hosts, val: '{{ pihole_sync_enable_hosts }}'}
@@ -40,6 +41,7 @@
   lineinfile:
     path: /etc/hosts
     line: '{{ item }}'
+    state: present
   with_items:
     - '# SHARED HOSTS - START'
     - '# SHARED HOSTS - END'
@@ -55,6 +57,7 @@
     name: pihole-cloudsync pull
     minute: '*/{{ pihole_sync_rate }}'
     job: /usr/local/bin/pihole-cloudsync --pull 2>&1 > /dev/null
+    state: present
   when: pihole_sync_leader | bool == False
   tags: sync
 
@@ -63,5 +66,6 @@
     name: pihole-cloudsync push
     minute: '*/{{ pihole_sync_rate }}'
     job: /usr/local/bin/pihole-cloudsync --push 2>&1 > /dev/null
+    state: present
   when: pihole_sync_leader | bool
   tags: sync

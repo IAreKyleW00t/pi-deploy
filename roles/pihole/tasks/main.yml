@@ -2,6 +2,8 @@
 - name: Ensure Pi-Hole directory exists
   file:
     path: /etc/pihole
+    # owner and group handled by Pi-Hole
+    mode: '0755'
     state: directory
   tags: pihole
 
@@ -9,8 +11,7 @@
   template:
     src: setupVars.conf.j2
     dest: /etc/pihole/setupVars.conf
-    owner: root
-    group: root
+    # owner and group handled by Pi-Hole
     mode: '0644'
   tags: pihole
 

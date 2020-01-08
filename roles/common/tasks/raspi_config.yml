@@ -7,7 +7,7 @@
   when: ansible_local.raspi_facts.can_expand != 0
   tags: raspi
 
-  # raspi-config doesn't fully change the systems hostname so we use hostnamectl too
+# raspi-config doesn't fully change the systems hostname so we use hostnamectl too
 - name: Set system hostname
   shell: |
     raspi-config nonint do_hostname {{ inventory_hostname | quote }}

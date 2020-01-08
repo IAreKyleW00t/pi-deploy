@@ -1,4 +1,12 @@
 ---
+- name: Add SSH keys to authorized_keys
+  authorized_key:
+    user: pi
+    key: '{{ item }}'
+    state: present
+  with_items: '{{ ssh_pubkeys }}'
+  tags: [common, ssh]
+
 - import_tasks: raspi_config.yml
   tags: common
 
@@ -6,7 +14,7 @@
   user:
     name: pi
     password: '{{ raspi_user_password }}'
-  when: raspi_user_password | length > 0
+  when: raspi_user_password | length
   tags: [common, passwd]
 
 - import_tasks: dhcpcd.yml
@@ -16,7 +24,7 @@
   apt:
     upgrade: full
     update_cache: yes
-  tags: common update
+  tags: [common, update]
 
 - name: Enable automatic updates
   apt:

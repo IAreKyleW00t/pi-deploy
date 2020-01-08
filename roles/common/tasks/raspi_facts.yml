@@ -2,6 +2,9 @@
 - name: Ensure custom facts directory exists
   file:
     path: /etc/ansible/facts.d
+    owner: root
+    group: root
+    mode: '0755'
     recurse: yes
     state: directory
   tags: [raspi, facts]

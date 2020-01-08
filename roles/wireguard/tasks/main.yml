@@ -46,16 +46,19 @@
     update_cache: yes
   tags: wireguard
 
-- name: Ensure Wireguard directory exists
+- name: Ensure Wireguard directory exists properly
   file:
     path: /etc/wireguard
+    owner: root
+    group: root
+    mode: '0700'
     state: directory
   tags: wireguard
 
 - name: Install Wireguard configuration
   template:
-    src: wg0.conf.j2
-    dest: /etc/wireguard/wg0.conf
+    src: wireguard.conf.j2
+    dest: '/etc/wireguard/{{ wireguard_interface }}.conf'
     owner: root
     group: root
     mode: '0600'

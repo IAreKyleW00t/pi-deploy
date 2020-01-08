@@ -1,16 +1,20 @@
 ---
-## Pi-Hole settings
 # Passwords are double hashed using SHA256 - copy from an existing setupVars.conf
 pihole_password: ''
 pihole_admin_email: admin@example.com
 
-# Forwarding DNS servers
-# 2 IPv4, 2 IPv6 max
+# Pi-Hole interface settings
+pihole_interface: eth0
+pihole_ip_address: 192.168.1.69/24
+pihole_ip6_address: fe80::31f0:4d5b::69/64
 pihole_dns:
   - 1.1.1.1#53
   - 1.0.0.1#53
   - 2606:4700:4700::1111#53
   - 2606:4700:4700::1001#53
+
+# Log queries for statistics
+pihole_query_log: yes
 
 # Allow DNS queries from all or a specific interfaces
 pihole_dnsmasq_mode: single
