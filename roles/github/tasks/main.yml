@@ -1,12 +1,18 @@
 ---
-- name: Install root gitconfig
+- name: Install git
+  apt:
+    name: git
+    state: latest
+  tags: github
+
+- name: Install/Update root gitconfig
   template:
     src: gitconfig.j2
     dest: /root/.gitconfig
     owner: root
     group: root
     mode: '0644'
-  tags: git
+  tags: github
 
 - name: Ensure root SSH folder exists
   file:
@@ -15,26 +21,26 @@
     group: root
     mode: '0700'
     state: directory
-  tags: ssh
+  tags: github
 
-- name: Add private SSH keys
+- name: Add root private SSH keys
   copy:
-    dest: /root/.ssh/id_ed25519
+    dest: '/root/.ssh/id_{{ github_ssh_privkey_type }}'
     owner: root
     group: root
     mode: '0600'
-    content: '{{ pihole_sync_ssh_key }}'
-  tags: ssh
+    content: '{{ github_ssh_privkey }}'
+  tags: github
 
 - name: Pull list of SSH fingerprints from GitHub
   command: ssh-keyscan -H github.com
-  register: keyscan
-  tags: ssh
+  register: github_keyscan
+  tags: github
 
 - name: Add GitHub's SSH fingerprints to known_hosts
   lineinfile:
     path: /root/.ssh/known_hosts
     line: '{{ item }}'
     create: yes
-  with_items: '{{ keyscan.stdout_lines }}'
-  tags: ssh
+  with_items: '{{ github_keyscan.stdout_lines }}'
+  tags: github

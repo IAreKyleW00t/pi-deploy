@@ -1,0 +1,10 @@
+---
+# Enable unbound (self-hosted recursive nameserver)
+pihole_enable_unbound: no
+
+# Unbound port
+unbound_port: 5353
+
+# Root nameserver file location
+unbound_root_hints_url: https://www.internic.net/domain/named.root
+unbound_root_hints: /var/lib/unbound/root.hints

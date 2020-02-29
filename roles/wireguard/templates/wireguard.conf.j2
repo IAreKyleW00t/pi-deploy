@@ -6,8 +6,8 @@ Address = {{ wireguard_addresses | join(", ") }}
 ListenPort = {{ wireguard_port }}
 
 PrivateKey = {{ wireguard_privkey }}
-PostUp = iptables -A FORWARD -i %i -j ACCEPT; ip6tables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; ip6tables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ raspi_static_interface }} -j MASQUERADE; ip6tables -t nat -A POSTROUTING -o {{ raspi_static_interface }} -j MASQUERADE
-PostDown = iptables -D FORWARD -i %i -j ACCEPT; ip6tables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; ip6tables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ raspi_static_interface }} -j MASQUERADE; ip6tables -t nat -D POSTROUTING -o {{ raspi_static_interface }} -j MASQUERADE
+PostUp = iptables -A FORWARD -i %i -j ACCEPT; ip6tables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; ip6tables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ wireguard_system_interface }} -j MASQUERADE; ip6tables -t nat -A POSTROUTING -o {{ wireguard_system_interface }} -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; ip6tables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; ip6tables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ wireguard_system_interface }} -j MASQUERADE; ip6tables -t nat -D POSTROUTING -o {{ wireguard_system_interface }} -j MASQUERADE
 
 {% for client in wireguard_clients %}
 # {{ client.name }}

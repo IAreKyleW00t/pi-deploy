@@ -1,11 +1,8 @@
 ---
-- import_tasks: git_ssh.yml
-  tags: sync
-
-- name: Download personal list repo
+- name: Download sync repo
   git:
     repo: '{{ pihole_sync_repo }}'
-    dest: /opt/pihole-lists
+    dest: '/opt/{{ pihole_sync_repo | basename | replace(".git", "") }}'
     update: yes
   tags: sync
 
@@ -16,7 +13,7 @@
     update: yes
   tags: sync
 
-- name: Copy pihole-cloudsync locally
+- name: Copy pihole-cloudsync to /usr/local/bin
   copy:
     src: /opt/pihole-cloudsync/pihole-cloudsync
     dest: /usr/local/bin/pihole-cloudsync
@@ -26,18 +23,18 @@
     remote_src: yes
   tags: sync
 
-- name: Update local pihole-cloudsync script variables
+- name: Update pihole-cloudsync script variables
   lineinfile:
     path: /usr/local/bin/pihole-cloudsync
     regexp: '^#?{{ item.var }}='
     line: '{{ item.var }}={{ item.val }}'
     state: present
   with_items:
-    - {var: personal_git_dir, val: /opt/pihole-lists}
-    - {var: enable_hosts, val: '{{ pihole_sync_enable_hosts }}'}
+    - { var: personal_git_dir, val: '/opt/{{ pihole_sync_repo | basename | replace(".git", "") }}' }
+    - { var: enable_hosts, val: '{{ pihole_sync_enable_hosts }}' }
   tags: sync
 
-- name: Update hosts file to support pihole-cloudsync
+- name: Make sure hosts file is updated to support pihole-cloudsync
   lineinfile:
     path: /etc/hosts
     line: '{{ item }}'
@@ -45,27 +42,27 @@
   with_items:
     - '# SHARED HOSTS - START'
     - '# SHARED HOSTS - END'
-  when: pihole_sync_enable_hosts | bool
+  when: pihole_sync_enable_hosts
   tags: sync
 
 - name: Perform inital sync
   command: /usr/local/bin/pihole-cloudsync --initpull
   tags: sync
 
-- name: Setup crontab for periodically pulling new changes
+- name: Setup cron for periodic pulling of new changes
   cron:
     name: pihole-cloudsync pull
     minute: '*/{{ pihole_sync_rate }}'
     job: /usr/local/bin/pihole-cloudsync --pull 2>&1 > /dev/null
     state: present
-  when: pihole_sync_leader | bool == False
+  when: not pihole_sync_leader
   tags: sync
 
-- name: Setup crontab for periodically pushing new changes
+- name: Setup cron for periodic pushing of new changes
   cron:
     name: pihole-cloudsync push
     minute: '*/{{ pihole_sync_rate }}'
     job: /usr/local/bin/pihole-cloudsync --push 2>&1 > /dev/null
     state: present
-  when: pihole_sync_leader | bool
+  when: pihole_sync_leader
   tags: sync

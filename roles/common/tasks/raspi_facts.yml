@@ -10,8 +10,8 @@
   tags: [raspi, facts]
 
 - name: Install custom Raspberry Pi fact module
-  template:
-    src: raspi_facts.fact.j2
+  copy:
+    src: raspi_facts.fact
     dest: /etc/ansible/facts.d/raspi_facts.fact
     owner: root
     group: root

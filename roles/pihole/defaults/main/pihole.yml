@@ -1,0 +1,41 @@
+---
+# Pi-Hole admin settings (default password is "admin")
+# Passwords are double hashed using SHA256:
+#   echo -n "P@ssw0rd" | sha256sum | awk '{printf "%s",$1 }' | sha256sum
+pihole_password: 998ed4d621742d0c2d85ed84173db569afa194d4597686cae947324aa58ab4bb
+pihole_admin_email: admin@example.com
+
+# Pi-Hole interface settings
+pihole_interface: eth0
+pihole_ip_address: ''   # 192.168.1.69/24
+pihole_ip6_address: ''  # fe80::31f0:4d5b::69/64
+pihole_dns: []
+#  - 1.1.1.1#53
+#  - 1.0.0.1#53
+#  - 2606:4700:4700::1111#53
+#  - 2606:4700:4700::1001#53
+
+# Enable query statistics
+pihole_query_log: yes
+
+# Allow DNS queries from all or a specific interfaces
+pihole_dnsmasq_mode: single
+
+# General security settings
+pihole_bogus_priv: yes
+pihole_fqdn_required: yes
+pihole_dnssec: yes
+
+# Conditional forwarding for local hostname resolution
+pihole_conditional_forwarding: no
+pihole_conditional_forwarding_ip: 192.168.1.1
+pihole_conditional_forwarding_domain: home.lan
+
+# API settings
+pihole_api_exclude_domains: []
+pihole_api_exclude_clients: []
+pihole_api_query_log: all
+pihole_api_privacy_mode: no
+
+# Flush old Pi-Hole query logs
+pihole_flush_logs: no

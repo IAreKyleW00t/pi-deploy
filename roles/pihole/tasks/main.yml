@@ -7,7 +7,7 @@
     state: directory
   tags: pihole
 
-- name: Install Pi-Hole configuration file
+- name: Install/Update Pi-Hole configuration
   template:
     src: setupVars.conf.j2
     dest: /etc/pihole/setupVars.conf
@@ -29,33 +29,46 @@
   file:
     path: /tmp/pihole-installer.sh
     state: absent
-  tags: [pihole, cleanup]
+  tags:
+    - pihole
+    - cleanup
 
-- name: Make system use Pi-Hole for DNS
+- name: Ensure system is using Pi-Hole (self) for DNS
   lineinfile:
     path: /etc/dhcpcd.conf
     regexp: '^(\s*)static domain_name_servers='
     line: '\1static domain_name_servers=127.0.0.1 ::1'
     backrefs: yes
-  tags: [pihole, network]
+  register: pihole_dhcpcd_config
+  tags:
+    - pihole
+    - network
 
-- name: Restart dhcpcd service
+- name: Restart dhcpcd to load new configuration changes
   systemd:
     name: dhcpcd
     state: restarted
     daemon_reload: yes
-  tags: [pihole, network]
-
-- import_tasks: pihole_sync.yml
-  when: pihole_enable_sync | bool
-  tags: pihole
-
-- import_tasks: unbound.yml
-  when: pihole_enable_unbound | bool
+  when: pihole_dhcpcd_config.changed
   tags:
-  - pihole
+    - pihole
+    - network
 
-- name: Flush Pi-Hole logs
-  command: pihole -f
-  when: pihole_flush_logs | bool
-  tags: [pihole, cleanup]
+- include_tasks: pihole_sync.yml
+  when: pihole_enable_sync
+  tags:
+    - pihole
+    - sync
+
+- include_tasks: unbound.yml
+  when: pihole_enable_unbound
+  tags:
+    - pihole
+    - unbound
+
+- name: Flush old Pi-Hole query logs
+  command: /usr/local/bin/pihole -f
+  when: pihole_flush_logs
+  tags:
+    - pihole
+    - cleanup

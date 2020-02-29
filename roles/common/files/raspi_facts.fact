@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# {{ ansible_managed }}
-# Created on: {{ ansible_date_time.date }} {{ ansible_date_time.time }}
-
 {
 cat <<EOF
 {

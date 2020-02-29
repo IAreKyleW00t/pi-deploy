@@ -1,0 +1,36 @@
+---
+- name: Download Docker installer
+  get_url:
+    url: https://get.docker.com
+    dest: /tmp/docker-installer.sh
+  tags: docker
+
+- name: Run Docker installer
+  command: bash /tmp/docker-installer.sh
+  tags: docker
+
+- name: Cleanup Docker installer
+  file:
+    path: /tmp/docker-installer.sh
+    state: absent
+  tags:
+    - docker
+    - cleanup
+
+- name: Install additional Docker dependencies
+  apt:
+    name:
+      - python
+      - python-pip
+      - libffi-dev
+      - libssl-dev
+    state: latest
+    update_cache: yes
+  tags: docker
+
+- name: Ensure Docker service is enabled and running
+  systemd:
+    name: docker
+    enabled: yes
+    state: started
+  tags: docker

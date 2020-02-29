@@ -5,14 +5,25 @@
     state: latest
   tags: wireguard
 
-- name: Enable unstable packages
-  lineinfile:
-    path: /etc/apt/sources.list.d/unstable.list
-    line: 'deb http://deb.debian.org/debian/ unstable main'
-    owner: root
-    group: root
-    mode: '0644'
-    create: yes
+- name: Enable IPv4 and IPv6 forwarding
+  sysctl:
+    name: '{{ item.name }}'
+    value: '{{ item.val }}'
+    sysctl_set: yes
+    reload: yes
+    state: present
+  with_items:
+    - { name: net.ipv4.ip_forward, val: 1 }
+    - { name: net.ipv6.conf.all.forwarding, val: 1 }
+  tags:
+    - wireguard
+    - network
+
+- name: Enable unstable packages repository
+  apt_repository:
+    repo: deb http://deb.debian.org/debian/ unstable main
+    filename: unstable
+    state: present
   tags: wireguard
 
 - name: Limit unstable packages
@@ -44,7 +55,13 @@
     name: wireguard
     state: latest
     update_cache: yes
+  register: apt_wireguard
   tags: wireguard
+
+- name: Restart system to load new Wireguard kernel modules
+  reboot:
+  when: apt_wireguard.changed
+  tags:  wireguard
 
 - name: Ensure Wireguard directory exists properly
   file:
@@ -55,49 +72,27 @@
     state: directory
   tags: wireguard
 
-- name: Install Wireguard configuration
+- name: Install/Update Wireguard configuration
   template:
     src: wireguard.conf.j2
     dest: '/etc/wireguard/{{ wireguard_interface }}.conf'
     owner: root
     group: root
     mode: '0600'
+  register: wireguard_config
   tags: wireguard
 
-- name: Enable IPv4 and IPv6 forwarding
-  blockinfile:
-    path: /etc/sysctl.d/10-wireguard.conf
-    owner: root
-    group: root
-    mode: '0644'
-    create: yes
-    block: |
-      net.ipv4.ip_forward=1
-      net.ipv6.conf.all.forwarding=1
-  tags: [wireguard, network]
-
-- name: Reboot system to enable Wireguard kernel modules
-  reboot:
-  tags: wireguard
-
-- name: Enable Wireguard service
-  systemd:
-    name: 'wg-quick@{{ wireguard_interface }}'
-    enabled: yes
-  tags: wireguard
-
-- name: Start/Restart Wireguard service
+- name: Restart Wireguard to load new configuration changes
   systemd:
     name: 'wg-quick@{{ wireguard_interface }}'
     state: restarted
+    daemon_reload: yes
+  when: wireguard_config.changed
   tags: wireguard
 
-- name: Grab Wireguard server public key
-  shell: 'echo -n {{ wireguard_privkey | quote }} | wg pubkey'
-  register: wg
-  tags: [wireguard, pubkey]
-
-- name: Display Wireguard server public key
-  debug:
-    msg: 'Wireguard pubkey: {{ wg.stdout }}'
-  tags: [wireguard, pubkey]
+- name: Ensure Wireguard service is enabled and running
+  systemd:
+    name: 'wg-quick@{{ wireguard_interface }}'
+    enabled: yes
+    state: started
+  tags: wireguard

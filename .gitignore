@@ -6,3 +6,9 @@
 
 # Inventories
 inventories/
+
+# Files
+./files/
+
+# Vault keys
+ansible_vault.key

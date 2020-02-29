@@ -40,13 +40,17 @@ require dhcp_server_identifier
 # OR generate Stable Private IPv6 Addresses based from the DUID
 slaac private
 
-{% if raspi_enable_static_ip is sameas true %}
-# Static IP settings
-interface {{ raspi_static_interface }}
-    static ip_address={{ raspi_static_ip }}
-{% if raspi_static_ip6 | length %}
-    static ip6_address={{ raspi_static_ip6 }}
+{% for i in raspi_static_interfaces %}
+# Static interface {{ i.interface }}
+interface {{ i.interface }}
+    static ip_address={{ i.ip_address }}
+{% if ('ip6_address' in i) and (i.ip6_address | length > 0) %}
+    static ip6_address={{ i.ip6_address }}
 {% endif %}
-    static routers={{ raspi_static_routers | join(" ") }}
-    static domain_name_servers={{ raspi_static_dns | join(" ") }}
+{% if ('routers' in i) and (i.routers | length > 0) %}
+    static routers={{ i.routers | join(" ") }}
 {% endif %}
+{% if ('domain_name_servers' in i) and (i.domain_name_servers | length > 0) %}
+    static domain_name_servers={{ i.domain_name_servers | join(" ") }}
+{% endif %}
+{% endfor %}

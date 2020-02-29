@@ -1,16 +1,19 @@
 ---
-# Wireguard settings
-# https://www.ultratools.com/tools/rangeGenerator for IPv6 generating subnets
+# System inferfance for iptable updates
+wireguard_system_interface: eth0
+
+# Wireguard interface settings
+# For IPv6 generating subnets: https://www.ultratools.com/tools/rangeGenerator
 wireguard_interface: wg0
 wireguard_port: 51820
-wireguard_privkey: QAgp...A1c=
-wireguard_addresses:
-  - 192.168.42.1/24
-  - fdf5:e6b9:a511:1ab0::/64
+wireguard_privkey: ''
+wireguard_addresses: []
+#  - 192.168.42.1/24
+#  - fdf5:e6b9:a511:1ab0::/64
 
-wireguard_clients:
-  - name: Example
-    pubkey: 9hzX...wTY=
-    allowed_ips:
-      - 192.168.42.2/32
-      - fdf5:e6b9:a511:1ab0::2/128
+wireguard_clients: []
+#  - name: Example
+#    pubkey: 9hzX...wTY=
+#    allowed_ips:
+#      - 192.168.42.2/32
+#      - fdf5:e6b9:a511:1ab0::2/128

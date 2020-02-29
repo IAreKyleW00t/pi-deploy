@@ -1,29 +1,36 @@
 ---
-# SSH public keys
-ssh_pubkeys:
-  - ssh-rsa AAAAB3NzaC...
-  - ssh-ed25519 AAAAC3NzaC1...
-
-# Password for 'pi' user
-# https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module
-raspi_user_password: ''
-
-# Static IP settings
-raspi_enable_static_ip: no
-raspi_static_interface: eth0
-raspi_static_ip: 192.168.1.69/24
-raspi_static_ip6: fe80::31f0:4d5b::69/64
-raspi_static_routers:
-  - 192.168.1.1
-raspi_static_dns:
-  - 1.1.1.1
-  - 1.0.0.1
-  - 2606:4700:4700::1111
-  - 2606:4700:4700::1001
-
 # Raspberry Pi settings
 raspi_memory_split: 16
 raspi_wifi_country: us
 raspi_keyboard_layout: us
 raspi_timezone: America/New_York
 raspi_locale: en_US.UTF-8
+
+# Static interfaces
+raspi_static_interfaces: []
+#  - interface: eth0
+#    ip_address: '192.168.1.69/24'
+#    ip6_address: 'fe80::31f0:4d5b::69/64'
+#    routers:
+#      - 192.168.1.1
+#    domain_name_servers:
+#      - 1.1.1.1
+#      - 1.0.0.1
+#      - 2606:4700:4700::1111
+#      - 2606:4700:4700::1001
+
+# Authorized SSH keys
+raspi_ssh_pubkeys: []
+#  - ssh-rsa AAAAB3NzaC...
+#  - ssh-ed25519 AAAAC3NzaC1...
+
+# Password for 'pi' user
+# See: https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module
+raspi_user_password: ''
+
+# Network mounts
+raspi_network_mounts: []
+#  - path: /mnt/example
+#    src: 192.168.1.42:/Example
+#    fstype: nfs
+#    opts: defaults

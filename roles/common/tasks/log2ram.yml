@@ -1,14 +1,14 @@
 ---
-- name: Install azlux.fr PGP keys
+- name: Install azlux.fr PGP key
   apt_key:
     url: https://azlux.fr/repo.gpg.key
     state: present
   tags: log2ram
 
-- name: Add azlux.fr packages
+- name: Add azlux.fr repository
   apt_repository:
     repo: 'deb http://packages.azlux.fr/debian {{ ansible_distribution_release }} main'
-    filename: azlux
+    filename: azlux.fr
     state: present
     update_cache: yes
   tags: log2ram
@@ -17,4 +17,10 @@
   apt:
     name: log2ram
     state: latest
+  register: apt_log2ram
+  tags: log2ram
+
+- name: Restart system to fully utilize log2ram
+  reboot:
+  when: apt_log2ram.changed
   tags: log2ram

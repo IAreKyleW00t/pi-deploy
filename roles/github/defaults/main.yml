@@ -1,0 +1,10 @@
+---
+# Git configuration
+github_name: root
+github_email: root@example.com
+github_username: root
+
+# SSH private key for GitHub access (required)
+# Should be encrypted, see: https://docs.ansible.com/ansible/latest/user_guide/vault.html
+github_ssh_privkey_type: ed25519
+github_ssh_privkey: ''

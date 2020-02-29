@@ -5,18 +5,9 @@
     state: latest
   tags: unbound
 
-- name: Install unbound configuration
-  template:
-    src: unbound.conf.j2
-    dest: /etc/unbound/unbound.conf.d/pi-hole.conf
-    owner: root
-    group: root
-    mode: '0644'
-  tags: unbound
-
 - name: Download latest root nameservers
   get_url:
-    url: https://www.internic.net/domain/named.root
+    url: '{{ unbound_root_hints_url }}'
     dest: '{{ unbound_root_hints }}'
     owner: root
     group: root
@@ -30,19 +21,32 @@
     hour: '0'
     day: '1'
     month: '*/6'
-    job: 'curl https://www.internic.net/domain/named.root -o {{ unbound_root_hints | quote }}.new && mv {{ unbound_root_hints | quote }}.new {{ unbound_root_hints | quote }}'
+    job: 'curl {{ unbound_root_hints_url | quote }} -o {{ unbound_root_hints | quote }}.new && mv {{ unbound_root_hints | quote }}.new {{ unbound_root_hints | quote }}'
   tags: unbound
 
-- name: Enable unbound service
-  systemd:
-    name: unbound
-    enabled: yes
+- name: Install/Update unbound configuration
+  template:
+    src: unbound.conf.j2
+    dest: /etc/unbound/unbound.conf.d/pi-hole.conf
+    owner: root
+    group: root
+    mode: '0644'
+  register: unbound_config
   tags: unbound
 
-- name: Start/Restart unbound service
+- name: Restart unbound to load new configuration changes
   systemd:
     name: unbound
     state: restarted
+    daemon_reload: yes
+  when: unbound_config.changed
+  tags: unbound
+
+- name: Ensure unbound service is enabled and running
+  systemd:
+    name: unbound
+    state: started
+    enabled: yes
   tags: unbound
 
 - name: Remove existing Pi-Hole DNS settings
@@ -63,5 +67,9 @@
   tags: unbound
 
 - name: Reconfigure Pi-Hole to apply new settings
-  command: /etc/.pihole/automated\ install/basic-install.sh --reconfigure --unattended
+  command:
+    argv:
+      - /etc/.pihole/automated install/basic-install.sh
+      - --reconfigure
+      - --unattended
   tags: unbound

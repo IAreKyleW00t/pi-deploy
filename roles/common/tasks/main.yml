@@ -1,52 +1,95 @@
 ---
-- name: Add SSH keys to authorized_keys
+- import_tasks: raspi_config.yml
+  tags:
+    - common
+    - raspi
+
+- name: Install/Update dhcpcd configuration
+  template:
+    src: dhcpcd.conf.j2
+    dest: /etc/dhcpcd.conf
+    owner: root
+    group: netdev
+    mode: '0644'
+  register: dhcpcd_config
+  tags:
+    - common
+    - network
+
+- name: Restart dhcpcd to load new configuration changes
+  systemd:
+    name: dhcpcd
+    state: restarted
+    daemon_reload: yes
+  when: dhcpcd_config.changed
+  tags:
+    - common
+    - network
+
+- name: Add SSH keys to pi user
   authorized_key:
     user: pi
     key: '{{ item }}'
     state: present
-  with_items: '{{ ssh_pubkeys }}'
-  tags: [common, ssh]
+  with_items: '{{ raspi_ssh_pubkeys }}'
+  tags:
+    - common
+    - ssh
 
-- import_tasks: raspi_config.yml
-  tags: common
-
-- name: Update default 'pi' user password
+- name: Set pi user password
   user:
     name: pi
     password: '{{ raspi_user_password }}'
   when: raspi_user_password | length
-  tags: [common, passwd]
+  tags:
+    - common
+    - passwd
 
-- import_tasks: dhcpcd.yml
-  tags: common
+- name: Mount additional network shares
+  mount:
+    path: '{{ item.path }}'
+    src: '{{ item.src }}'
+    fstype: '{{ item.fstype }}'
+    opts: '{{ item.opts }}'
+    state: mounted
+  with_items: '{{ raspi_network_mounts }}'
+  tags:
+    - common
+    - mounts
 
-- name: Perform full system update
-  apt:
-    upgrade: full
-    update_cache: yes
-  tags: [common, update]
+- import_tasks: log2ram.yml
+  tags:
+    - common
+    - log2ram
 
 - name: Enable automatic updates
   apt:
     name: unattended-upgrades
     state: latest
-  tags: common
+  tags:
+    - common
+    - updates
 
-- name: Install additional software
+- name: Perform full system update
   apt:
-    name: [vim, git]
-    state: latest
-  tags: common
+    upgrade: full
+    update_cache: yes
+  register: apt_update
+  tags:
+    - common
+    - updates
 
-- import_tasks: log2ram.yml
-  tags: common
-
-- name: Reboot system to apply all changes/updates
+- name: Restart system to fully apply all updates
   reboot:
-  tags: common
+  when: apt_update.changed
+  tags:
+    - common
+    - updates
 
 - name: Remove packages that are no longer needed
   apt:
     autoremove: yes
     autoclean: yes
-  tags: [common, cleanup]
+  tags:
+    - common
+    - cleanup
