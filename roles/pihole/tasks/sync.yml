@@ -31,7 +31,7 @@
     state: present
   with_items:
     - { var: personal_git_dir, val: '/opt/{{ pihole_sync_repo | basename | replace(".git", "") }}' }
-    - { var: enable_hosts, val: '{{ pihole_sync_enable_hosts }}' }
+    - { var: enable_hosts, val: '{{ pihole_sync_hosts }}' }
   tags: sync
 
 - name: Make sure hosts file is updated to support pihole-cloudsync
@@ -42,7 +42,7 @@
   with_items:
     - '# SHARED HOSTS - START'
     - '# SHARED HOSTS - END'
-  when: pihole_sync_enable_hosts
+  when: pihole_sync_hosts
   tags: sync
 
 - name: Perform inital sync
