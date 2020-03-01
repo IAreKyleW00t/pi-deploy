@@ -12,6 +12,7 @@
     owner: root
     group: root
     mode: '0644'
+    force: yes
   tags: unbound
 
 - name: Enable periodic root nameserver updates
@@ -27,7 +28,7 @@
 - name: Install/Update unbound configuration
   template:
     src: unbound.conf.j2
-    dest: /etc/unbound/unbound.conf.d/main.conf
+    dest: /etc/unbound/unbound.conf.d/ansible.conf
     owner: root
     group: root
     mode: '0644'

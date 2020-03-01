@@ -19,6 +19,7 @@
   get_url:
     url: https://install.pi-hole.net
     dest: /tmp/pihole-installer.sh
+    force: yes
   tags: pihole
 
 - name: Run Pi-Hole installer
