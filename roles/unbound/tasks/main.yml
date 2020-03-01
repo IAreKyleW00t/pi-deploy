@@ -27,7 +27,7 @@
 - name: Install/Update unbound configuration
   template:
     src: unbound.conf.j2
-    dest: /etc/unbound/unbound.conf.d/pi-hole.conf
+    dest: /etc/unbound/unbound.conf.d/main.conf
     owner: root
     group: root
     mode: '0644'
@@ -47,29 +47,4 @@
     name: unbound
     state: started
     enabled: yes
-  tags: unbound
-
-- name: Remove existing Pi-Hole DNS settings
-  lineinfile:
-    path: /etc/pihole/setupVars.conf
-    regexp: '^PIHOLE_DNS_'
-    state: absent
-  tags: unbound
-
-- name: Set Pi-Hole DNS to use local unbound instance
-  lineinfile:
-    path: /etc/pihole/setupVars.conf
-    state: present
-    line: '{{ item }}'
-  with_items:
-    - 'PIHOLE_DNS_1=127.0.0.1#{{ unbound_port }}'
-    - 'PIHOLE_DNS_2=::1#{{ unbound_port }}'
-  tags: unbound
-
-- name: Reconfigure Pi-Hole to apply new settings
-  command:
-    argv:
-      - /etc/.pihole/automated install/basic-install.sh
-      - --reconfigure
-      - --unattended
   tags: unbound

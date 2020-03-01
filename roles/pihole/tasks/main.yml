@@ -54,17 +54,11 @@
     - pihole
     - network
 
-- include_tasks: pihole_sync.yml
-  when: pihole_enable_sync
+- include_tasks: sync.yml
+  when: pihole_sync
   tags:
     - pihole
     - sync
-
-- include_tasks: unbound.yml
-  when: pihole_enable_unbound
-  tags:
-    - pihole
-    - unbound
 
 - name: Flush old Pi-Hole query logs
   command: /usr/local/bin/pihole -f

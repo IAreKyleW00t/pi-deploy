@@ -1,7 +1,4 @@
 ---
-# Enable unbound (self-hosted recursive nameserver)
-pihole_enable_unbound: no
-
 # Unbound port
 unbound_port: 5353
 

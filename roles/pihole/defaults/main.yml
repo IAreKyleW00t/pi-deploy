@@ -39,3 +39,19 @@ pihole_api_privacy_mode: no
 
 # Flush old Pi-Hole query logs
 pihole_flush_logs: no
+
+# Enable Pi-Hole syncing (pihole-cloudsync)
+pihole_sync: no
+
+# Repo to push/pull changes from (stored in /opt)
+# SSH keys will need to be setup for proper passwordless syncing and private repo's
+pihole_sync_repo: https://github.com/stevejenkins/my-pihole-lists
+
+# Include syncing /etc/hosts
+pihole_sync_hosts: yes
+
+# Minutes between syncing (cron)
+pihole_sync_rate: 15
+
+# "Leaders" will push changes instead of pull
+pihole_sync_leader: no
