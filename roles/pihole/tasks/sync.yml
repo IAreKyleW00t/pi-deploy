@@ -1,12 +1,12 @@
 ---
-- name: Download sync repo
+- name: Pull sync repo
   git:
     repo: '{{ pihole_sync_repo }}'
     dest: '/opt/{{ pihole_sync_repo | basename | replace(".git", "") }}'
     update: yes
   tags: sync
 
-- name: Download pihole-cloudsync
+- name: Pull pihole-cloudsync from GitHub
   git:
     repo: git@github.com:stevejenkins/pihole-cloudsync.git
     dest: /opt/pihole-cloudsync
