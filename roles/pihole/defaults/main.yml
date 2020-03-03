@@ -51,7 +51,7 @@ pihole_sync_repo: https://github.com/stevejenkins/my-pihole-lists
 pihole_sync_hosts: yes
 
 # Minutes between syncing (cron)
-pihole_sync_rate: 15
+pihole_sync_interval: 15
 
 # "Leaders" will push changes instead of pull
 pihole_sync_leader: no

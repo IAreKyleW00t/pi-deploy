@@ -58,7 +58,7 @@
 - name: Setup cron for periodic pulling of new changes
   cron:
     name: pihole-cloudsync pull
-    minute: '*/{{ pihole_sync_rate }}'
+    minute: '*/{{ pihole_sync_interval }}'
     job: /usr/local/bin/pihole-cloudsync --pull 2>&1 > /dev/null
     state: present
   become: yes
@@ -68,7 +68,7 @@
 - name: Setup cron for periodic pushing of new changes
   cron:
     name: pihole-cloudsync push
-    minute: '*/{{ pihole_sync_rate }}'
+    minute: '*/{{ pihole_sync_interval }}'
     job: /usr/local/bin/pihole-cloudsync --push 2>&1 > /dev/null
     state: present
   become: yes
