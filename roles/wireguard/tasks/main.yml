@@ -3,6 +3,7 @@
   apt:
     name: raspberrypi-kernel-headers
     state: latest
+  become: yes
   tags: wireguard
 
 - name: Enable IPv4 and IPv6 forwarding
@@ -12,6 +13,7 @@
     sysctl_set: yes
     reload: yes
     state: present
+  become: yes
   with_items:
     - { name: net.ipv4.ip_forward, val: 1 }
     - { name: net.ipv6.conf.all.forwarding, val: 1 }
@@ -24,6 +26,7 @@
     repo: deb http://deb.debian.org/debian/ unstable main
     filename: unstable
     state: present
+  become: yes
   tags: wireguard
 
 - name: Limit unstable packages
@@ -37,6 +40,7 @@
       Package: *
       Pin: release a=unstable
       Pin-Priority: 150
+  become: yes
   tags: wireguard
 
 - name: Install Wireguard PGP keys
@@ -44,6 +48,7 @@
     keyserver: keyserver.ubuntu.com
     id: '{{ item }}'
     state: present
+  become: yes
   with_items:
     - 8B48AD6246925553
     - 7638D0442B90D010
@@ -55,11 +60,13 @@
     name: wireguard
     state: latest
     update_cache: yes
+  become: yes
   register: apt_wireguard
   tags: wireguard
 
 - name: Restart system to load new Wireguard kernel modules
   reboot:
+  become: yes
   when: apt_wireguard.changed
   tags:  wireguard
 
@@ -70,6 +77,7 @@
     group: root
     mode: '0700'
     state: directory
+  become: yes
   tags: wireguard
 
 - name: Install/Update Wireguard interface configurations
@@ -79,6 +87,7 @@
     owner: root
     group: root
     mode: '0600'
+  become: yes
   with_items: '{{ wireguard_interfaces }}'
   register: wireguard_configs
   tags: wireguard
@@ -88,6 +97,7 @@
     name: 'wg-quick@{{ item.item.interface }}'
     state: restarted
     daemon_reload: yes
+  become: yes
   when: item.changed
   with_items: '{{ wireguard_configs.results }}'
   loop_control:
@@ -99,6 +109,7 @@
     name: 'wg-quick@{{ item.interface }}'
     enabled: yes
     state: started
+  become: yes
   with_items: '{{ wireguard_interfaces }}'
   loop_control:
     label: '{{ item.interface }}'

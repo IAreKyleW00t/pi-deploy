@@ -5,6 +5,7 @@
     # owner and group handled by Pi-Hole
     mode: '0755'
     state: directory
+  become: yes
   tags: pihole
 
 - name: Install/Update Pi-Hole configuration
@@ -13,6 +14,7 @@
     dest: /etc/pihole/setupVars.conf
     # owner and group handled by Pi-Hole
     mode: '0644'
+  become: yes
   tags: pihole
 
 - name: Download Pi-Hole installer
@@ -24,6 +26,7 @@
 
 - name: Run Pi-Hole installer
   command: bash /tmp/pihole-installer.sh --unattended
+  become: yes
   tags: pihole
 
 - name: Cleanup Pi-Hole installer
@@ -40,6 +43,7 @@
     regexp: '^(\s*)static domain_name_servers='
     line: '\1static domain_name_servers=127.0.0.1 ::1'
     backrefs: yes
+  become: yes
   register: pihole_dhcpcd_config
   tags:
     - pihole
@@ -50,12 +54,14 @@
     name: dhcpcd
     state: restarted
     daemon_reload: yes
+  become: yes
   when: pihole_dhcpcd_config.changed
   tags:
     - pihole
     - network
 
-- include_tasks: sync.yml
+- name: Setup Pi-Hole list syncing
+  include_tasks: sync.yml
   when: pihole_sync
   tags:
     - pihole
@@ -63,6 +69,7 @@
 
 - name: Flush old Pi-Hole query logs
   command: /usr/local/bin/pihole -f
+  become: yes
   when: pihole_flush_logs
   tags:
     - pihole

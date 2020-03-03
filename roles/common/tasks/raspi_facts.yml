@@ -7,6 +7,7 @@
     mode: '0755'
     recurse: yes
     state: directory
+  become: yes
   tags: [raspi, facts]
 
 - name: Install custom Raspberry Pi fact module
@@ -16,6 +17,7 @@
     owner: root
     group: root
     mode: '0755'
+  become: yes
   tags: [raspi, facts]
 
 - name: Reload local ansible facts

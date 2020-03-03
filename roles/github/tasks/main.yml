@@ -3,6 +3,7 @@
   apt:
     name: git
     state: latest
+  become: yes
   tags: github
 
 - name: Install/Update root gitconfig
@@ -12,6 +13,7 @@
     owner: root
     group: root
     mode: '0644'
+  become: yes
   tags: github
 
 - name: Ensure root SSH folder exists
@@ -21,6 +23,7 @@
     group: root
     mode: '0700'
     state: directory
+  become: yes
   tags: github
 
 - name: Add root private SSH keys
@@ -30,6 +33,7 @@
     group: root
     mode: '0600'
     content: '{{ github_ssh_privkey }}'
+  become: yes
   tags: github
 
 - name: Pull list of SSH fingerprints from GitHub
@@ -42,5 +46,6 @@
     path: /root/.ssh/known_hosts
     line: '{{ item }}'
     create: yes
+  become: yes
   with_items: '{{ github_keyscan.stdout_lines }}'
   tags: github

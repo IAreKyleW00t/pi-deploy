@@ -11,6 +11,7 @@
     owner: root
     group: netdev
     mode: '0644'
+  become: yes
   register: dhcpcd_config
   tags:
     - common
@@ -21,6 +22,7 @@
     name: dhcpcd
     state: restarted
     daemon_reload: yes
+  become: yes
   when: dhcpcd_config.changed
   tags:
     - common
@@ -40,6 +42,7 @@
   user:
     name: pi
     password: '{{ raspi_user_password }}'
+  become: yes
   when: raspi_user_password | length
   tags:
     - common
@@ -52,6 +55,7 @@
     fstype: '{{ item.fstype }}'
     opts: '{{ item.opts }}'
     state: mounted
+  become: yes
   with_items: '{{ raspi_network_mounts }}'
   tags:
     - common
@@ -66,6 +70,7 @@
   apt:
     name: unattended-upgrades
     state: latest
+  become: yes
   tags:
     - common
     - updates
@@ -74,6 +79,7 @@
   apt:
     upgrade: full
     update_cache: yes
+  become: yes
   register: apt_update
   tags:
     - common
@@ -81,6 +87,8 @@
 
 - name: Restart system to fully apply all updates
   reboot:
+    reboot_timeout: 3600
+  become: yes
   when: apt_update.changed
   tags:
     - common
@@ -90,6 +98,7 @@
   apt:
     autoremove: yes
     autoclean: yes
+  become: yes
   tags:
     - common
     - cleanup

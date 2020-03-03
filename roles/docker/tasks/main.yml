@@ -8,6 +8,7 @@
 
 - name: Run Docker installer
   command: bash /tmp/docker-installer.sh
+  become: yes
   tags: docker
 
 - name: Cleanup Docker installer
@@ -27,6 +28,7 @@
       - libssl-dev
     state: latest
     update_cache: yes
+  become: yes
   tags: docker
 
 - name: Ensure Docker service is enabled and running
@@ -34,4 +36,5 @@
     name: docker
     enabled: yes
     state: started
+  become: yes
   tags: docker

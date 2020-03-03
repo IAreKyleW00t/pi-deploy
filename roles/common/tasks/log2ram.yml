@@ -3,6 +3,7 @@
   apt_key:
     url: https://azlux.fr/repo.gpg.key
     state: present
+  become: yes
   tags: log2ram
 
 - name: Add azlux.fr repository
@@ -11,16 +12,19 @@
     filename: azlux.fr
     state: present
     update_cache: yes
+  become: yes
   tags: log2ram
 
 - name: Install log2ram
   apt:
     name: log2ram
     state: latest
+  become: yes
   register: apt_log2ram
   tags: log2ram
 
 - name: Restart system to fully utilize log2ram
   reboot:
+  become: yes
   when: apt_log2ram.changed
   tags: log2ram

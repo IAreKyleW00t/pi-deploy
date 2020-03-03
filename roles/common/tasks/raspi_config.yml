@@ -4,6 +4,7 @@
 
 - name: Expand file system
   command: raspi-config nonint do_expand_rootfs
+  become: yes
   when: ansible_local.raspi_facts.can_expand != 0
   tags: raspi
 
@@ -12,35 +13,42 @@
   shell: |
     raspi-config nonint do_hostname {{ inventory_hostname | quote }}
     hostnamectl set-hostname {{ inventory_hostname | quote }}
+  become: yes
   when: ansible_local.raspi_facts.hostname != inventory_hostname
   tags: raspi
 
 - name: Enable persistent SSH access
   command: raspi-config nonint do_ssh 0
+  become: yes
   when: ansible_local.raspi_facts.ssh != 0
   tags: raspi
 
 - name: Set memory split value
   command: raspi-config nonint do_memory_split {{ raspi_memory_split | quote }}
+  become: yes
   when: ansible_local.raspi_facts.memory_split != raspi_memory_split
   tags: raspi
 
 - name: Set WiFi country
   command: raspi-config nonint do_wifi_country {{ raspi_wifi_country | quote }}
+  become: yes
   when: (ansible_local.raspi_facts.pi_type == 0) and (ansible_local.raspi_facts.wifi_country != raspi_wifi_country)
   tags: raspi
 
 - name: Set keyboard layout
   command: raspi-config nonint do_configure_keyboard {{ raspi_keyboard_layout | quote }}
+  become: yes
   when: ansible_local.raspi_facts.keyboard_layout != raspi_keyboard_layout
   tags: raspi
 
 - name: Set timezone
   command: raspi-config nonint do_change_timezone {{ raspi_timezone | quote }}
+  become: yes
   when: ansible_local.raspi_facts.timezone != raspi_timezone
   tags: raspi
 
 - name: Set locale
   command: raspi-config nonint do_change_locale {{ raspi_locale | quote }}
+  become: yes
   when: ansible_local.raspi_facts.locale != raspi_locale
   tags: raspi

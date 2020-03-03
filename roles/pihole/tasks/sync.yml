@@ -4,6 +4,7 @@
     repo: '{{ pihole_sync_repo }}'
     dest: '/opt/{{ pihole_sync_repo | basename | replace(".git", "") }}'
     update: yes
+  become: yes
   tags: sync
 
 - name: Pull pihole-cloudsync from GitHub
@@ -11,6 +12,7 @@
     repo: git@github.com:stevejenkins/pihole-cloudsync.git
     dest: /opt/pihole-cloudsync
     update: yes
+  become: yes
   tags: sync
 
 - name: Copy pihole-cloudsync to /usr/local/bin
@@ -21,6 +23,7 @@
     group: root
     mode: '0755'
     remote_src: yes
+  become: yes
   tags: sync
 
 - name: Update pihole-cloudsync script variables
@@ -29,6 +32,7 @@
     regexp: '^#?{{ item.var }}='
     line: '{{ item.var }}={{ item.val }}'
     state: present
+  become: yes
   with_items:
     - { var: personal_git_dir, val: '/opt/{{ pihole_sync_repo | basename | replace(".git", "") }}' }
     - { var: enable_hosts, val: '{{ pihole_sync_hosts }}' }
@@ -39,6 +43,7 @@
     path: /etc/hosts
     line: '{{ item }}'
     state: present
+  become: yes
   with_items:
     - '# SHARED HOSTS - START'
     - '# SHARED HOSTS - END'
@@ -47,6 +52,7 @@
 
 - name: Perform inital sync
   command: /usr/local/bin/pihole-cloudsync --initpull
+  become: yes
   tags: sync
 
 - name: Setup cron for periodic pulling of new changes
@@ -55,6 +61,7 @@
     minute: '*/{{ pihole_sync_rate }}'
     job: /usr/local/bin/pihole-cloudsync --pull 2>&1 > /dev/null
     state: present
+  become: yes
   when: not pihole_sync_leader
   tags: sync
 
@@ -64,5 +71,6 @@
     minute: '*/{{ pihole_sync_rate }}'
     job: /usr/local/bin/pihole-cloudsync --push 2>&1 > /dev/null
     state: present
+  become: yes
   when: pihole_sync_leader
   tags: sync
