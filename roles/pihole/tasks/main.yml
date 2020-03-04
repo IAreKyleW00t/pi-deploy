@@ -60,6 +60,20 @@
     - pihole
     - network
 
+- name: Setup cronjob for daily adlist updates
+  cron:
+    name: Daily Pi-Hole adlist update
+    cron_file: pihole-daily
+    job: /usr/local/bin/pihole updateGravity >/var/log/pihole_updateGravity.log || cat /var/log/pihole_updateGravity.log
+    hour: '{{ pihole_cron_hour | quote }}'
+    minute: '{{ pihole_cron_minute | quote }}'
+    user: root
+    state: present
+  become: yes
+  tags:
+    - pihole
+    - cron
+
 - name: Setup Pi-Hole list syncing
   include_tasks: sync.yml
   when: pihole_sync

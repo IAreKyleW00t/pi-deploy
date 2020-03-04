@@ -40,6 +40,10 @@ pihole_api_privacy_mode: no
 # Flush old Pi-Hole query logs
 pihole_flush_logs: no
 
+# Daily cronjob options
+pihole_cron_hour: 12
+pihole_cron_minute: 0
+
 # Enable Pi-Hole syncing (pihole-cloudsync)
 pihole_sync: no
 
