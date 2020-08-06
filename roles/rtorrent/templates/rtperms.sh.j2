@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# {{ ansible_managed }}
+# Created on: {{ ansible_date_time.date }} {{ ansible_date_time.time }}
+
+DOWNLOADS_DIR=${1:-{{ rtorrent_downloads_dir | quote }}}
+DEFAULT_OWNER={{ rtorrent_default_owner | quote }}
+DEFAULT_GROUP={{ rtorrent_default_group | quote }}
+DEFAULT_DIR_MODE={{ rtorrent_default_dir_mode | quote }}
+DEFAULT_FILE_MODE={{ rtorrent_default_file_mode | quote }}
+DEFAULT_RECURSE=false
+
+find "$DOWNLOADS_DIR" -type d -print0 | tac -rs '\0' |
+while IFS= read -r -d '' dir; do
+    # Set defaults
+    OWNER="$DEFAULT_OWNER"
+    GROUP="$DEFAULT_GROUP"
+    DIR_MODE="$DEFAULT_DIR_MODE"
+    FILE_MODE="$DEFAULT_FILE_MODE"
+    RECURSE="$DEFAULT_RECURSE"
+
+    # If a .rtperms file exists, source it
+    if [ -f "$dir/.rtperms" ]; then
+        source "$dir/.rtperms"Scho
+    fi
+
+    # Set default owner permissions
+    if [ ! "$OWNER" -eq "0" ]; then
+        if [ "$RECURSE" = true ]; then
+            find "$dir" -type f ! -name ".rtperms" -exec chown "$OWNER" {} \;
+        else
+            find "$dir" -type f ! -name ".rtperms" -exec chown "$OWNER" {} \; -maxdepth 1
+        fi
+    fi
+
+    # Set default group permissions
+    if [ ! "$GROUP" -eq "0" ]; then
+        if [ "$RECURSE" = true ]; then
+            find "$dir" -type f ! -name ".rtperms" -exec chgrp "$GROUP" {} \;
+        else
+            find "$dir" -type f ! -name ".rtperms" -exec chgrp "$GROUP" {} \; -maxdepth 1
+        fi
+    fi
+
+    # Set default directory permissions
+    if [ ! "$DIR_MODE" -eq "0" ]; then
+        if [ "$RECURSE" = true ]; then
+            find "$dir" -type d -exec chmod "$DIR_MODE" {} \;
+        else
+            find "$dir" -type d -exec chmod "$DIR_MODE" {} \; -maxdepth 1
+        fi
+    fi
+
+    # Set default file permissions
+    if [ ! "$FILE_MODE" -eq "0" ]; then
+        if [ "$RECURSE" = true ]; then
+            find "$dir" -type f ! -name ".rtperms" -exec chmod "$FILE_MODE" {} \;
+        else
+            find "$dir" -type f ! -name ".rtperms" -exec chmod "$FILE_MODE" {} \; -maxdepth 1
+        fi
+    fi
+done

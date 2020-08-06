@@ -1,0 +1,70 @@
+---
+- name: Pull rtorrent repository to build from
+  git:
+    repo: '{{ rtorrent_repo }}'
+    dest: '/opt/{{ rtorrent_repo | basename | replace(".git", "") }}'
+    update: yes
+  become: yes
+  tags: rtorrent
+
+- name: Build local rtorrent docker image
+  docker_image:
+    name: '{{ rtorrent_repo | basename | replace(".git", "") }}'
+    build:
+      path: '/opt/{{ rtorrent_repo | basename | replace(".git", "") }}'
+      pull: yes
+      args:
+        VERSION: latest
+        BUILD_DATE: '{{ ansible_date_time.date }}'
+        BUILD_CORES: '{{ ansible_processor_vcpus }}'
+      cache_from:
+        - lsiobase/nginx
+    source: build
+  become: yes
+  tags: rtorrent
+
+- name: Ensure rtorrent config and downloads folders exist
+  file:
+    path: '{{ item }}'
+    owner: root
+    group: root
+    mode: '0755'
+    recurse: yes
+    state: directory
+  become: yes
+  with_items:
+    - '{{ rtorrent_config_dir }}'
+    - '{{ rtorrent_downloads_dir }}'
+  tags: rtorrent
+
+- import_tasks: users.yml
+  tags:
+    - rtorrent
+    - users
+
+- import_tasks: perms.yml
+  tags:
+    - rtorrent
+    - perms
+
+- name: Create/Update rtorrent container
+  docker_container:
+    name: rtorrent
+    image: '{{ rtorrent_repo | basename | replace(".git", "") }}'
+    state: started
+    restart_policy: unless-stopped
+    env:
+      TZ: '{{ rtorrent_timezone }}'
+      PUID: '{{ rtorrent_uid | string }}'
+      PGID: '{{ rtorrent_gid | string }}'
+    ports:
+      - '{{ rtorrent_web_port }}:443'
+      - '{{ rtorrent_dht_port }}:49160'
+      - '{{ rtorrent_conn_port }}:51415'
+    volumes:
+      - '{{ rtorrent_config_dir }}:/config'
+      - '{{ rtorrent_downloads_dir }}:/downloads'
+    comparisons:
+      '*': strict
+  become: yes
+  tags: rtorrent

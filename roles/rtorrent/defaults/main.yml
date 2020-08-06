@@ -1,0 +1,31 @@
+---
+# rTorrent repository to build from
+rtorrent_repo: git@github.com:IAreKyleW00t/rtorrent-docker.git
+
+# rTorrent ports
+rtorrent_web_port: 443
+rtorrent_dht_port: 49160
+rtorrent_conn_port: 51413
+
+# rTorrent container user settings
+rtorrent_uid: 1000
+rtorrent_gid: 100
+
+# General rTorrent container settings
+rtorrent_timezone: America/New_York
+
+# rTorrent config and downloads folders
+rtorrent_config_dir: /srv/docker/rtorrent/config
+rtorrent_downloads_dir: /srv/docker/rtorrent/downloads
+
+# rTorrent users for basic authentication
+rtorrent_htpasswd_users: []
+
+# rTorrent permission fix defaults
+rtorrent_default_owner: '{{ rtorrent_uid }}'
+rtorrent_default_group: '{{ rtorrent_gid }}'
+rtorrent_default_dir_mode: '0755'
+rtorrent_default_file_mode: '0644'
+
+# rTorrent permission fix script interval (minutes)
+rtorrent_perms_interval: 5

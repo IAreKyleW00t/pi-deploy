@@ -1,0 +1,7 @@
+---
+- hosts: rtorrent
+  roles:
+    - common
+    - github
+    - docker
+    - rtorrent

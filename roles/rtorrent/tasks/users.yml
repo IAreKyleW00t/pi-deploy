@@ -1,0 +1,20 @@
+---
+- name: Ensure rtorrent nginx configuration directory exists
+  file:
+    path: '{{ rtorrent_config_dir }}/nginx'
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory
+  become: yes
+  tags: users
+
+- name: Install/Update nginx htpasswd file
+  copy:
+    content: '{{ rtorrent_htpasswd_users | join("\n") }}'
+    dest: '{{ rtorrent_config_dir }}/nginx/htpasswd'
+    owner: root
+    group: root
+    mode: '0600'
+  become: yes
+  tags: users

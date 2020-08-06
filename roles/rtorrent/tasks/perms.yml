@@ -1,0 +1,28 @@
+---
+- name: Install/Update rtperms script
+  template:
+    src: rtperms.sh.j2
+    dest: /usr/local/bin/rtperms.sh
+    owner: root
+    group: root
+    mode: '0755'
+  become: yes
+  tags: perms
+
+- name: Setup cronjob periodically fixing permissions
+  cron:
+    name: rTorrent permission check
+    cron_file: rtorrent
+    job: /usr/local/bin/rtperms.sh
+    minute: '{{ rtorrent_perms_interval | string }}'
+    user: root
+    state: present
+  become: yes
+  tags:
+    - perms
+    - cron
+
+- name: Run rtperms script now
+  command: /usr/local/bin/rtperms.sh
+  become: yes
+  tags: perms
