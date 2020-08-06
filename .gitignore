@@ -1,14 +1,12 @@
-# Ansible retries
-*.retry
-
 # VSCode
 .vscode/
 
-# Inventories
-inventories/
+# Mac files
+.DS_Store
 
-# Files
-./files/
-
-# Vault keys
-ansible_vault.key
+# Ansible
+*.retry
+/inventories/
+/files/
+/templates/
+/ansible_vault.key
